@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import type { Restaurant } from '../types/restaurant';
 import { FavoritesService } from '../utils/storage';
 
@@ -13,14 +13,10 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [favorites, setFavorites] = useState<Restaurant[]>([]);
+  const [favorites, setFavorites] = useState<Restaurant[]>(() => {
+    return FavoritesService.getFavorites();
+  });
   const [searchFilters, setSearchFilters] = useState<any>(null);
-
-  useEffect(() => {
-    // Load favorites from localStorage on initial render
-    const storedFavorites = FavoritesService.getFavorites();
-    setFavorites(storedFavorites);
-  }, []);
 
   const toggleFavorite = (restaurant: Restaurant) => {
     setFavorites(prev => {

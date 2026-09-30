@@ -3,42 +3,84 @@ import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const navigate = useNavigate();
-  const [geminiApiKey, setGeminiApiKey] = useState('');
-  const [tripadvisorApiKey, setTripadvisorApiKey] = useState('');
-  const [routingApiKey, setRoutingApiKey] = useState('');
-  const [rememberKeys, setRememberKeys] = useState(false);
-  const [status, setStatus] = useState({ gemini: 'idle', tripadvisor: 'idle', routing: 'idle' });
+  const remembered = localStorage.getItem('gourmetRadarRememberKeys') === 'true';
 
-  // Load API keys from localStorage if remember option is enabled
-  useState(() => {
-    const remembered = localStorage.getItem('gourmetRadarRememberKeys') === 'true';
-    setRememberKeys(remembered);
-    
-    if (remembered) {
-      setGeminiApiKey(localStorage.getItem('gourmetRadarGeminiKey') || '');
-      setTripadvisorApiKey(localStorage.getItem('gourmetRadarTripadvisorKey') || '');
-      setRoutingApiKey(localStorage.getItem('gourmetRadarRoutingKey') || '');
-    }
+  const [geminiApiKey, setGeminiApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarGeminiKey') || '') : '';
+  });
+  const [michelinApiKey, setMichelinApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarMichelinKey') || '') : '';
+  });
+  const [gamberoRossoApiKey, setGamberoRossoApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarGamberoRossoKey') || '') : '';
+  });
+  const [theforkApiKey, setTheforkApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarTheForkKey') || '') : '';
+  });
+  const [tripadvisorApiKey, setTripadvisorApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarTripadvisorKey') || '') : '';
+  });
+  const [websearchApiKey, setWebsearchApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarWebSearchKey') || '') : '';
+  });
+  const [routingApiKey, setRoutingApiKey] = useState(() => {
+    return remembered ? (localStorage.getItem('gourmetRadarRoutingKey') || '') : '';
+  });
+  const [rememberKeys, setRememberKeys] = useState(remembered);
+  const [status, setStatus] = useState({
+    gemini: 'idle',
+    michelin: 'idle',
+    gamberoRosso: 'idle',
+    thefork: 'idle',
+    tripadvisor: 'idle',
+    websearch: 'idle',
+    routing: 'idle'
   });
 
   const saveKeys = () => {
     if (rememberKeys) {
       localStorage.setItem('gourmetRadarRememberKeys', 'true');
       localStorage.setItem('gourmetRadarGeminiKey', geminiApiKey);
+      localStorage.setItem('gourmetRadarMichelinKey', michelinApiKey);
+      localStorage.setItem('gourmetRadarGamberoRossoKey', gamberoRossoApiKey);
+      localStorage.setItem('gourmetRadarTheForkKey', theforkApiKey);
       localStorage.setItem('gourmetRadarTripadvisorKey', tripadvisorApiKey);
+      localStorage.setItem('gourmetRadarWebSearchKey', websearchApiKey);
       localStorage.setItem('gourmetRadarRoutingKey', routingApiKey);
     } else {
       localStorage.removeItem('gourmetRadarRememberKeys');
       localStorage.removeItem('gourmetRadarGeminiKey');
+      localStorage.removeItem('gourmetRadarMichelinKey');
+      localStorage.removeItem('gourmetRadarGamberoRossoKey');
+      localStorage.removeItem('gourmetRadarTheForkKey');
       localStorage.removeItem('gourmetRadarTripadvisorKey');
+      localStorage.removeItem('gourmetRadarWebSearchKey');
       localStorage.removeItem('gourmetRadarRoutingKey');
     }
-    
-    setStatus(prev => ({ ...prev, gemini: 'saved', tripadvisor: 'saved', routing: 'saved' }));
-    
+
+    setStatus(prev => ({
+      ...prev,
+      gemini: 'saved',
+      michelin: 'saved',
+      gamberoRosso: 'saved',
+      thefork: 'saved',
+      tripadvisor: 'saved',
+      websearch: 'saved',
+      routing: 'saved'
+    }));
+
     // Reset status after 2 seconds
     setTimeout(() => {
-      setStatus(prev => ({ ...prev, gemini: 'idle', tripadvisor: 'idle', routing: 'idle' }));
+      setStatus(prev => ({
+        ...prev,
+        gemini: 'idle',
+        michelin: 'idle',
+        gamberoRosso: 'idle',
+        thefork: 'idle',
+        tripadvisor: 'idle',
+        websearch: 'idle',
+        routing: 'idle'
+      }));
     }, 2000);
   };
 
@@ -49,16 +91,100 @@ const Settings = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       // Simulate success
       setStatus(prev => ({ ...prev, gemini: 'success' }));
-      
+
       setTimeout(() => {
         setStatus(prev => ({ ...prev, gemini: 'idle' }));
       }, 2000);
     } catch (error) {
       console.error('Gemini connection test failed:', error);
       setStatus(prev => ({ ...prev, gemini: 'error' }));
-      
+
       setTimeout(() => {
         setStatus(prev => ({ ...prev, gemini: 'idle' }));
+      }, 2000);
+    }
+  };
+
+  const testMichelinConnection = async () => {
+    setStatus(prev => ({ ...prev, michelin: 'testing' }));
+    try {
+      // In a real implementation, this would test the API connection
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate success
+      setStatus(prev => ({ ...prev, michelin: 'success' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, michelin: 'idle' }));
+      }, 2000);
+    } catch (error) {
+      console.error('Michelin connection test failed:', error);
+      setStatus(prev => ({ ...prev, michelin: 'error' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, michelin: 'idle' }));
+      }, 2000);
+    }
+  };
+
+  const testGamberoRossoConnection = async () => {
+    setStatus(prev => ({ ...prev, gamberoRosso: 'testing' }));
+    try {
+      // In a real implementation, this would test the API connection
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate success
+      setStatus(prev => ({ ...prev, gamberoRosso: 'success' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, gamberoRosso: 'idle' }));
+      }, 2000);
+    } catch (error) {
+      console.error('Gambero Rosso connection test failed:', error);
+      setStatus(prev => ({ ...prev, gamberoRosso: 'error' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, gamberoRosso: 'idle' }));
+      }, 2000);
+    }
+  };
+
+  const testTheforkConnection = async () => {
+    setStatus(prev => ({ ...prev, thefork: 'testing' }));
+    try {
+      // In a real implementation, this would test the API connection
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate success
+      setStatus(prev => ({ ...prev, thefork: 'success' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, thefork: 'idle' }));
+      }, 2000);
+    } catch (error) {
+      console.error('TheFork connection test failed:', error);
+      setStatus(prev => ({ ...prev, thefork: 'error' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, thefork: 'idle' }));
+      }, 2000);
+    }
+  };
+
+  const testWebsearchConnection = async () => {
+    setStatus(prev => ({ ...prev, websearch: 'testing' }));
+    try {
+      // In a real implementation, this would test the API connection
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate success
+      setStatus(prev => ({ ...prev, websearch: 'success' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, websearch: 'idle' }));
+      }, 2000);
+    } catch (error) {
+      console.error('Web search connection test failed:', error);
+      setStatus(prev => ({ ...prev, websearch: 'error' }));
+
+      setTimeout(() => {
+        setStatus(prev => ({ ...prev, websearch: 'idle' }));
       }, 2000);
     }
   };
@@ -70,14 +196,14 @@ const Settings = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       // Simulate success
       setStatus(prev => ({ ...prev, tripadvisor: 'success' }));
-      
+
       setTimeout(() => {
         setStatus(prev => ({ ...prev, tripadvisor: 'idle' }));
       }, 2000);
     } catch (error) {
       console.error('Tripadvisor connection test failed:', error);
       setStatus(prev => ({ ...prev, tripadvisor: 'error' }));
-      
+
       setTimeout(() => {
         setStatus(prev => ({ ...prev, tripadvisor: 'idle' }));
       }, 2000);
@@ -91,14 +217,14 @@ const Settings = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       // Simulate success
       setStatus(prev => ({ ...prev, routing: 'success' }));
-      
+
       setTimeout(() => {
         setStatus(prev => ({ ...prev, routing: 'idle' }));
       }, 2000);
     } catch (error) {
       console.error('Routing connection test failed:', error);
       setStatus(prev => ({ ...prev, routing: 'error' }));
-      
+
       setTimeout(() => {
         setStatus(prev => ({ ...prev, routing: 'idle' }));
       }, 2000);
@@ -112,8 +238,8 @@ const Settings = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900">Impostazioni</h1>
-            <button 
-              onClick={() => navigate('/')} 
+            <button
+              onClick={() => navigate('/')}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
             >
               Home
@@ -129,10 +255,10 @@ const Settings = () => {
           <div className="p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Gemini API Key</h2>
             <p className="text-gray-600 mb-4">
-              La chiave API di Google Gemini viene utilizzata per la ricerca naturale, 
+              La chiave API di Google Gemini viene utilizzata per la ricerca naturale,
               l'interpretazione delle query, la ricerca web e l'analisi dei risultati.
             </p>
-            
+
             <div className="space-y-4">
               <div className="flex items-center mb-2">
                 <label className="flex-items cursor-pointer">
@@ -147,7 +273,7 @@ const Settings = () => {
                   </span>
                 </label>
               </div>
-              
+
               <div className="relative">
                 <input
                   type="password"
@@ -157,7 +283,7 @@ const Settings = () => {
                   className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
                 {geminiApiKey && (
-                  <button 
+                  <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
                     onClick={(e) => {
@@ -172,31 +298,189 @@ const Settings = () => {
                   <span className="text-gray-400">🔑</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3 mt-2">
-                <button 
+                <button
                   onClick={testGeminiConnection}
                   className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
                   disabled={status.gemini === 'testing'}
                 >
                   {status.gemini === 'testing' ? 'Testing...' : 'Test connessione'}
                 </button>
-                
-                <span className="px-2 py-1 text-xs rounded-full 
-                  {status.gemini === 'success' && 'bg-green-100 text-green-800'}
-                  {status.gemini === 'error' && 'bg-red-100 text-red-800'}
-                  {status.gemini === 'saved' && 'bg-blue-100 text-blue-800'}"
-                >
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.gemini === 'success' ? 'bg-green-100 text-green-800' : ''}${status.gemini === 'error' ? 'bg-red-100 text-red-800' : ''}${status.gemini === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
                   {status.gemini === 'success' && 'Connessione riuscita'}
                   {status.gemini === 'error' && 'Connessione fallita'}
                   {status.gemini === 'saved' && 'Impostazioni salvate'}
                 </span>
               </div>
             </div>
-            
+
             <div className="mt-4 text-sm text-gray-500">
-              <p>Le API key utilizzate direttamente dal browser possono essere tecnicamente esposte. 
+              <p>Le API key utilizzate direttamente dal browser possono essere tecnicamente esposte.
               Non utilizzare questa modalità come deposito di segreti server-side.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Michelin API Key Section */}
+        <div className="bg-white rounded-xl shadow-md mb-6">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Michelin API Key</h2>
+            <p className="text-gray-600 mb-4">
+              La chiave API di Michelin consente l'accesso alle informazioni sui ristoranti stellati,
+              Bib Gourmand e altre selezioni della famosa guida rossa.
+            </p>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Inserisci la tua chiave API Michelin"
+                  value={michelinApiKey}
+                  onChange={(e) => setMichelinApiKey(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                {michelinApiKey && (
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMichelinApiKey('');
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-gray-400">🔑</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-2">
+                <button
+                  onClick={testMichelinConnection}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
+                  disabled={status.michelin === 'testing'}
+                >
+                  {status.michelin === 'testing' ? 'Testing...' : 'Test connessione'}
+                </button>
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.michelin === 'success' ? 'bg-green-100 text-green-800' : ''}${status.michelin === 'error' ? 'bg-red-100 text-red-800' : ''}${status.michelin === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
+                  {status.michelin === 'success' && 'Connessione riuscita'}
+                  {status.michelin === 'error' && 'Connessione fallita'}
+                  {status.michelin === 'saved' && 'Impostazioni salvate'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Gambero Rosso API Key Section */}
+        <div className="bg-white rounded-xl shadow-md mb-6">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Gambero Rosso API Key</h2>
+            <p className="text-gray-600 mb-4">
+              La chiave API di Gambero Rosso consente l'accesso alle informazioni sui ristoranti
+              premiati con le forchette e altre riconoscimenti della guida italiana.
+            </p>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Inserisci la tua chiave API Gambero Rosso"
+                  value={gamberoRossoApiKey}
+                  onChange={(e) => setGamberoRossoApiKey(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                {gamberoRossoApiKey && (
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGamberoRossoApiKey('');
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-gray-400">🔑</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-2">
+                <button
+                  onClick={testGamberoRossoConnection}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
+                  disabled={status.gamberoRosso === 'testing'}
+                >
+                  {status.gamberoRosso === 'testing' ? 'Testing...' : 'Test connessione'}
+                </button>
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.gamberoRosso === 'success' ? 'bg-green-100 text-green-800' : ''}${status.gamberoRosso === 'error' ? 'bg-red-100 text-red-800' : ''}${status.gamberoRosso === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
+                  {status.gamberoRosso === 'success' && 'Connessione riuscita'}
+                  {status.gamberoRosso === 'error' && 'Connessione fallita'}
+                  {status.gamberoRosso === 'saved' && 'Impostazioni salvate'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* TheFork API Key Section */}
+        <div className="bg-white rounded-xl shadow-md mb-6">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">TheFork API Key</h2>
+            <p className="text-gray-600 mb-4">
+              La chiave API di TheFork consente l'accesso alle informazioni sui ristoranti,
+              recensioni, offerte e dati sui yums e insider.
+            </p>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Inserisci la tua chiave API TheFork"
+                  value={theforkApiKey}
+                  onChange={(e) => setTheforkApiKey(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                {theforkApiKey && (
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setTheforkApiKey('');
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-gray-400">🔑</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-2">
+                <button
+                  onClick={testTheforkConnection}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
+                  disabled={status.thefork === 'testing'}
+                >
+                  {status.thefork === 'testing' ? 'Testing...' : 'Test connessione'}
+                </button>
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.thefork === 'success' ? 'bg-green-100 text-green-800' : ''}${status.thefork === 'error' ? 'bg-red-100 text-red-800' : ''}${status.thefork === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
+                  {status.thefork === 'success' && 'Connessione riuscita'}
+                  {status.thefork === 'error' && 'Connessione fallita'}
+                  {status.thefork === 'saved' && 'Impostazioni salvate'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -206,10 +490,10 @@ const Settings = () => {
           <div className="p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Tripadvisor API Key</h2>
             <p className="text-gray-600 mb-4">
-              La chiave API di Tripadvisor consente l'accesso ai dati delle strutture, 
+              La chiave API di Tripadvisor consente l'accesso ai dati delle strutture,
               recensioni, foto e informazioni dettagliate sui ristoranti di tutto il mondo.
             </p>
-            
+
             <div className="space-y-4">
               <div className="relative">
                 <input
@@ -220,7 +504,7 @@ const Settings = () => {
                   className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
                 {tripadvisorApiKey && (
-                  <button 
+                  <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
                     onClick={(e) => {
@@ -235,24 +519,74 @@ const Settings = () => {
                   <span className="text-gray-400">🔑</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3 mt-2">
-                <button 
+                <button
                   onClick={testTripadvisorConnection}
                   className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
                   disabled={status.tripadvisor === 'testing'}
                 >
                   {status.tripadvisor === 'testing' ? 'Testing...' : 'Test connessione'}
                 </button>
-                
-                <span className="px-2 py-1 text-xs rounded-full 
-                  {status.tripadvisor === 'success' && 'bg-green-100 text-green-800'}
-                  {status.tripadvisor === 'error' && 'bg-red-100 text-red-800'}
-                  {status.tripadvisor === 'saved' && 'bg-blue-100 text-blue-800'}"
-                >
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.tripadvisor === 'success' ? 'bg-green-100 text-green-800' : ''}${status.tripadvisor === 'error' ? 'bg-red-100 text-red-800' : ''}${status.tripadvisor === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
                   {status.tripadvisor === 'success' && 'Connessione riuscita'}
                   {status.tripadvisor === 'error' && 'Connessione fallita'}
                   {status.tripadvisor === 'saved' && 'Impostazioni salvate'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Web Search API Key Section */}
+        <div className="bg-white rounded-xl shadow-md mb-6">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Web Search API Key</h2>
+            <p className="text-gray-600 mb-4">
+              La chiave API per la ricerca web (come Google Custom Search) viene utilizzata
+              per cercare informazioni sui ristoranti quando gli altri provider non sono disponibili.
+            </p>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Inserisci la tua chiave API di ricerca web"
+                  value={websearchApiKey}
+                  onChange={(e) => setWebsearchApiKey(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                {websearchApiKey && (
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setWebsearchApiKey('');
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-gray-400">🔑</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-2">
+                <button
+                  onClick={testWebsearchConnection}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
+                  disabled={status.websearch === 'testing'}
+                >
+                  {status.websearch === 'testing' ? 'Testing...' : 'Test connessione'}
+                </button>
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.websearch === 'success' ? 'bg-green-100 text-green-800' : ''}${status.websearch === 'error' ? 'bg-red-100 text-red-800' : ''}${status.websearch === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
+                  {status.websearch === 'success' && 'Connessione riuscita'}
+                  {status.websearch === 'error' && 'Connessione fallita'}
+                  {status.websearch === 'saved' && 'Impostazioni salvate'}
                 </span>
               </div>
             </div>
@@ -264,10 +598,10 @@ const Settings = () => {
           <div className="p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Routing API Key</h2>
             <p className="text-gray-600 mb-4">
-              La chiave API del servizio di routing (come Google Maps API, Mapbox, o simili) 
+              La chiave API del servizio di routing (come Google Maps API, Mapbox, o simili)
               viene utilizzata per calcolare i tempi e le distanze di percorrenza in automobile.
             </p>
-            
+
             <div className="space-y-4">
               <div className="relative">
                 <input
@@ -278,7 +612,7 @@ const Settings = () => {
                   className="w-full pl-10 pr-4 py-3 pl-10 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
                 {routingApiKey && (
-                  <button 
+                  <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-500"
                     onClick={(e) => {
@@ -293,21 +627,17 @@ const Settings = () => {
                   <span className="text-gray-400">🔑</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3 mt-2">
-                <button 
+                <button
                   onClick={testRoutingConnection}
                   className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm font-medium rounded transition-colors"
                   disabled={status.routing === 'testing'}
                 >
                   {status.routing === 'testing' ? 'Testing...' : 'Test connessione'}
                 </button>
-                
-                <span className="px-2 py-1 text-xs rounded-full 
-                  {status.routing === 'success' && 'bg-green-100 text-green-800'}
-                  {status.routing === 'error' && 'bg-red-100 text-red-800'}
-                  {status.routing === 'saved' && 'bg-blue-100 text-blue-800'}"
-                >
+
+                <span className={`px-2 py-1 text-xs rounded-full ${status.routing === 'success' ? 'bg-green-100 text-green-800' : ''}${status.routing === 'error' ? 'bg-red-100 text-red-800' : ''}${status.routing === 'saved' ? 'bg-blue-100 text-blue-800' : ''}`}>
                   {status.routing === 'success' && 'Connessione riuscita'}
                   {status.routing === 'error' && 'Connessione fallita'}
                   {status.routing === 'saved' && 'Impostazioni salvate'}
@@ -319,25 +649,25 @@ const Settings = () => {
 
         {/* Save Button */}
         <div className="flex justify-center">
-          <button 
+          <button
             onClick={saveKeys}
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-8 rounded-lg transition-colors hover:shadow-md"
           >
             Salva impostazioni
           </button>
         </div>
-        
+
         {/* Security Notice */}
         <div className="mt-8 pt-6 border-t border-gray-200">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Sicurezza e privacy</h2>
           <p className="text-gray-600">
-            Questa applicazione è progettata per funzionare completamente lato client, 
-            senza server di backend. Tutte le tue preferenze e le API key (se scegli di 
+            Questa applicazione è progettata per funzionare completamente lato client,
+            senza server di backend. Tutte le tue preferenze e le API key (se scegli di
             ricordarle) sono salvate unicamente nel tuo browser tramite localStorage.
           </p>
           <p className="text-gray-600 mt-2">
-            Per massima sicurezza, ti consigliamo di non salvare le API key e di inserirle 
-            manualmente ogni volta che utilizzi l'applicazione, soprattutto se condividi 
+            Per massima sicurezza, ti consigliamo di non salvare le API key e di inserirle
+            manualmente ogni volta che utilizzi l'applicazione, soprattutto se condividi
             il dispositivo con altri utenti.
           </p>
         </div>

@@ -24,31 +24,26 @@ const RestaurantDetails = () => {
           name: 'Ristorante Da Michele',
           provider: 'Michelin',
           rating: 4.9,
-          reviews: 284,
-          price: '€€€€',
-          cuisine: ['Italiana', 'Napoletana'],
-          occasion: ['Romantico', 'Cena speciale', 'Famiglia'],
-          meals: ['Pranzo', 'Cena'],
+          reviewCounts: [{ source: 'Tripadvisor', count: 284 }],
+          priceRange: '€€€€',
+          cuisines: ['Italiana', 'Napoletana'],
+          occasions: ['Romantico', 'Cena speciale', 'Famiglia'],
+          mealTypes: ['Pranzo', 'Cena'],
           features: ['Tavoli all\'aperto', 'Carta dei vini', 'Wi-Fi', 'Accessibile', 'Pet friendly'],
+          dietaryOptions: ['Vegetariano disponibile'],
           address: 'Via Cesare Sersale, 1/3, 80139 Napoli NA',
           phone: '+39 081 557 8417',
           website: 'https://www.ristorantedamichele.it/',
-          distance: '1.2 km',
+          driveDistance: 1.2,
           driveTime: '5 min',
           latitude: 40.8484,
           longitude: 14.2526,
-          michelin: true,
-          gamberoRosso: false,
-          theFork: true,
-          tripadvisor: true,
-          theForkRating: 9.4,
-          theForkReviews: 229,
-          tripadvisorRating: 4.7,
-          tripadvisorReviews: 532,
-          promotions: [
-            { type: 'sconto', value: 10, description: 'Sconto 10% prenotando online' } as const
-          ],
-          dietary: ['Vegetariano disponibile'],
+          michelin: { stars: 3, bibGourmand: false, greenStar: false, selected: true },
+          gamberoRosso: { forchette: 3, otherAwards: [] },
+          theFork: { rating: 9.4, reviewCount: 229 },
+          tripadvisor: { rating: 4.7, reviewCount: 532 },
+          ratings: [],
+          reviews: [],
           sources: [
             {
               provider: 'Michelin',
@@ -141,16 +136,18 @@ const RestaurantDetails = () => {
         </button>
         <h1 className="text-2xl font-bold text-gray-900">
           {restaurant?.name}
-          <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-            MICHELIN
-          </span>
+          {restaurant?.michelin && (
+            <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              MICHELIN
+            </span>
+          )}
         </h1>
       </header>
 
       <div className="space-y-6">
         <div className="text-center">
           <p className="text-3xl font-bold text-indigo-600">{restaurant?.rating}</p>
-          <p className="text-sm text-gray-500"> /5 ({restaurant?.reviews} recensioni)</p>
+          <p className="text-sm text-gray-500"> /5 ({restaurant?.reviewCounts?.reduce((sum, rc) => sum + rc.count, 0) || 0} recensioni)</p>
         </div>
 
         <div className="space-y-4">

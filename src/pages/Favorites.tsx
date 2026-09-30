@@ -1,25 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import type { Restaurant } from '../types/restaurant';
 
 const Favorites = () => {
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<Restaurant[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Load favorites from localStorage
+  const [favorites, setFavorites] = useState<Restaurant[]>(() => {
     const storedFavorites = localStorage.getItem('gourmetRadarFavorites');
     if (storedFavorites) {
       try {
-        setFavorites(JSON.parse(storedFavorites));
+        return JSON.parse(storedFavorites);
       } catch (e) {
         console.error('Error parsing favorites from localStorage', e);
-        setFavorites([]);
+        return [];
       }
     }
-    setLoading(false);
-  }, []);
+    return [];
+  });
 
   const saveFavorites = (favs: Restaurant[]) => {
     try {
@@ -40,16 +36,6 @@ const Favorites = () => {
       return updatedFavorites;
     });
   };
-
-  if (loading) {
-    return (
-      <div className="flex h-[calc(100vh-64px)] items-center justify-center">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-[calc(100vh-64px)]">
@@ -121,7 +107,7 @@ const Favorites = () => {
                   <p className="text-sm font-medium text-gray-500">Valutazione media</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {favorites.length > 0 
-                      ? (favorites.reduce((sum, fav) => sum + fav.rating, 0) / favorites.length).toFixed(1)
+                      ? (favorites.reduce((sum, fav) => sum + (fav.rating || 0), 0) / favorites.length).toFixed(1)
                       : '0'}
                   </p>
                 </div>
@@ -150,10 +136,10 @@ const Favorites = () => {
                         </h2>
                         <div className="flex mt-2 space-x-4">
                           <span className="text-sm text-gray-500">
-                            {favorite.cuisine.join(' • ')}
+                            {favorite.cuisines.join(' • ')}
                           </span>
                           <span className="text-sm text-gray-500">
-                            {favorite.occasion.slice(0, 2).join(' • ')}
+                            {favorite.occasions.slice(0, 2).join(' • ')}
                           </span>
                         </div>
                       </div>
@@ -163,14 +149,14 @@ const Favorites = () => {
                           ❤️ PREFERITO
                         </div>
                         <div className="flex items-center">
-                          {favorite.theForkRating && (
+                          {favorite.theFork?.rating && (
                             <span className="text-sm text-gray-600">
-                              🍴 {favorite.theForkRating}/10
+                              🍴 {favorite.theFork.rating}/10
                             </span>
                           )}
-                          {favorite.tripadvisorRating && (
+                          {favorite.tripadvisor?.rating && (
                             <span className="text-sm text-gray-600 ml-2">
-                              ⭐ {favorite.tripadvisorRating}/5
+                              ⭐ {favorite.tripadvisor.rating}/5
                             </span>
                           )}
                         </div>
@@ -188,11 +174,11 @@ const Favorites = () => {
                       </div>
                       <div className="flex items-start">
                         <span className="flex-shrink-0 mr-3">💰</span>
-                        <span className="text-sm text-gray-600">{favorite.price}</span>
+                        <span className="text-sm text-gray-600">{favorite.priceRange}</span>
                       </div>
                       <div className="flex items-start">
                         <span className="flex-shrink-0 mr-3">⭐</span>
-                        <span className="text-sm text-gray-600">{favorite.rating} ({favorite.reviews} recensioni)</span>
+                        <span className="text-sm text-gray-600">{favorite.rating || 0} ({favorite.reviewCounts?.reduce((sum, rc) => sum + rc.count, 0) || 0} recensioni)</span>
                       </div>
                     </div>
 

@@ -1,43 +1,68 @@
 export interface Restaurant {
   id: string;
   name: string;
-  provider: string;
-  rating: number;
-  reviews: number;
-  price: string;
-  cuisine: string[];
-  occasion: string[];
-  meals?: string[];
-  features: string[];
+  description?: string;
   address: string;
-  phone?: string;
-  website: string;
-  distance: string;
-  driveTime: string;
+  city?: string;
+  province?: string;
+  region?: string;
+  country?: string;
   latitude?: number;
   longitude?: number;
-  
-  // Awards and recognitions
-  michelin: boolean;
-  gamberoRosso: boolean;
-  
-  // Platform-specific data
-  theFork: boolean;
-  theForkRating?: number;
-  theForkReviews?: number;
-  tripadvisor: boolean;
-  tripadvisorRating?: number;
-  tripadvisorReviews?: number;
-  
-  // Additional info
-  promotions?: Array<{
-    type: 'sconto' | 'offerta';
+  phone?: string;
+  website?: string;
+  priceRange?: string; // e.g., '€', '€€', '€€€', '€€€€'
+  averagePrice?: number;
+  rating?: number; // overall rating, 0-5
+  provider?: string; // e.g., 'Michelin', 'Gambero Rosso', 'TheFork', 'Tripadvisor', 'Web Search'
+  cuisines: string[];
+  occasions: string[];
+  mealTypes: string[];
+  features: string[];
+  dietaryOptions: string[];
+  michelin?: {
+    stars?: number;
+    bibGourmand?: boolean;
+    greenStar?: boolean;
+    selected?: boolean;
+  };
+  gamberoRosso?: {
+    forchette: number;
+    otherAwards?: string[];
+  };
+  theFork?: {
+    rating?: number; // out of 10
+    reviewCount?: number;
+    priceRange?: string;
+    offers?: boolean;
+    yums?: number;
+    insider?: boolean;
+    discount?: string;
+  };
+  tripadvisor?: {
+    rating?: number; // out of 5
+    reviewCount?: number;
+    priceLevel?: number; // 1 to 4
+    awards?: string[];
+  };
+  ratings?: Array<{
+    source: string;
     value: number;
-    description: string;
+    max: number;
   }>;
-  dietary?: string[];
-  
-  // Data provenance
+  reviewCounts?: Array<{
+    source: string;
+    count: number;
+  }>;
+  reviews?: Array<{
+    source: string;
+    excerpt?: string;
+    rating?: number;
+    date?: string;
+  }>;
+  awards?: string[];
+  driveTime?: string; // e.g., "25 min"
+  driveDistance?: number; // in kilometers
   sources: Array<{
     provider: string;
     sourceUrl: string;

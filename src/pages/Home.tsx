@@ -111,7 +111,7 @@ const Home = () => {
           </h3>
           <p className="text-gray-600">
             Trova ristoranti raggiungibili in un determinato tempo di percorrenza
-            in automobile, con opzioni da 10 minuti a 2 ore.
+            in automobile, con opzioni da 10 minutes a 2 ore.
           </p>
         </div>
         <div className="text-center p-6 bg-white rounded-xl shadow-md">

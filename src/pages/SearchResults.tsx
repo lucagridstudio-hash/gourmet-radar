@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import type { Restaurant } from '../types/restaurant';
 
@@ -12,8 +12,10 @@ const SearchResults = () => {
   // Parse search params
   const origin = searchParams.get('origin') || '';
   const maxDriveMinutes = searchParams.get('maxDriveMinutes') || '';
-  const cuisines = searchParams.get('cuisines') ? JSON.parse(searchParams.get('cuisines') || '[]') : [];
-  const occasion = searchParams.get('occasion') ? JSON.parse(searchParams.get('occasion') || '[]') : [];
+  const cuisinesStr = searchParams.get('cuisines') || '[]';
+  const occasionStr = searchParams.get('occasion') || '[]';
+  const cuisines = useMemo(() => JSON.parse(cuisinesStr), [cuisinesStr]);
+  const occasion = useMemo(() => JSON.parse(occasionStr), [occasionStr]);
   const priceRange = searchParams.get('priceRange') || '';
   const rating = searchParams.get('rating') || '';
   const minReviews = searchParams.get('minReviews') || '';
@@ -37,19 +39,23 @@ const SearchResults = () => {
                 name: 'Ristorante Da Michele',
                 provider: 'Michelin',
                 rating: 4.9,
-                reviews: 284,
-                price: '€€€€',
-                cuisine: ['Italiana', 'Napoletana'],
-                occasion: ['Romantico', 'Cena speciale'],
+                reviewCounts: [{ source: 'Tripadvisor', count: 284 }],
+                priceRange: '€€€€',
+                cuisines: ['Italiana', 'Napoletana'],
+                occasions: ['Romantico', 'Cena speciale'],
+                mealTypes: ['Pranzo', 'Cena'],
+                dietaryOptions: [],
                 features: ['Tavoli all\'aperto', 'Carta dei vini'],
                 address: 'Via Cesare Sersale, 1/3, 80139 Napoli NA',
-                distance: '1.2 km',
+                driveDistance: 1.2,
                 driveTime: '5 min',
                 website: 'https://www.ristorantedamichele.it/',
-                michelin: true,
-                gamberoRosso: false,
-                theFork: true,
-                tripadvisor: true,
+                michelin: { stars: 3, bibGourmand: false, greenStar: false, selected: true },
+                gamberoRosso: { forchette: 3, otherAwards: [] },
+                theFork: { rating: 9.4, reviewCount: 229 },
+                tripadvisor: { rating: 4.7, reviewCount: 532 },
+                ratings: [],
+                reviews: [],
                 sources: []
               },
               {
@@ -57,19 +63,23 @@ const SearchResults = () => {
                 name: 'Osteria da Carmela',
                 provider: 'Tripadvisor',
                 rating: 4.7,
-                reviews: 156,
-                price: '€€€',
-                cuisine: ['Italiana', 'Mediterranea'],
-                occasion: ['Famiglia', 'Pranzo'],
+                reviewCounts: [{ source: 'Tripadvisor', count: 156 }],
+                priceRange: '€€€',
+                cuisines: ['Italiana', 'Mediterranea'],
+                occasions: ['Famiglia', 'Pranzo'],
+                mealTypes: ['Pranzo', 'Cena'],
+                dietaryOptions: [],
                 features: ['Wi-Fi', 'Accessibile', 'Tavoli all\'aperto'],
                 address: 'Via Paladino, 39, 80134 Napoli NA',
-                distance: '2.1 km',
+                driveDistance: 2.1,
                 driveTime: '8 min',
                 website: 'https://www.osteriadacarmela.it/',
-                michelin: false,
-                gamberoRosso: true,
-                theFork: true,
-                tripadvisor: true,
+                michelin: undefined,
+                gamberoRosso: { forchette: 3, otherAwards: [] },
+                theFork: { rating: 9.0, reviewCount: 120 },
+                tripadvisor: { rating: 4.5, reviewCount: 100 },
+                ratings: [],
+                reviews: [],
                 sources: []
               }
             ]
@@ -79,19 +89,23 @@ const SearchResults = () => {
                 name: 'Pizzeria Starita',
                 provider: 'TheFork',
                 rating: 4.5,
-                reviews: 342,
-                price: '€€',
-                cuisine: ['Pizza', 'Italiana'],
-                occasion: ['Famiglia', 'Tra amici'],
+                reviewCounts: [{ source: 'Tripadvisor', count: 342 }],
+                priceRange: '€€',
+                cuisines: ['Pizza', 'Italiana'],
+                occasions: ['Famiglia', 'Tra amici'],
+                mealTypes: ['Pranzo', 'Cena'],
+                dietaryOptions: [],
                 features: ['Tavoli all\'aperto', 'Wi-Fi', 'Accessibile'],
                 address: 'Via Materdei, 27/28, 80136 Napoli NA',
-                distance: '0.8 km',
+                driveDistance: 0.8,
                 driveTime: '4 min',
                 website: 'https://www.pizzeriastarita.it/',
-                michelin: false,
-                gamberoRosso: false,
-                theFork: true,
-                tripadvisor: true,
+                michelin: undefined,
+                gamberoRosso: undefined,
+                theFork: { rating: 4.2, reviewCount: 80 },
+                tripadvisor: { rating: 4.0, reviewCount: 60 },
+                ratings: [],
+                reviews: [],
                 sources: []
               },
               {
@@ -99,19 +113,23 @@ const SearchResults = () => {
                 name: 'Trattoria da Nennella',
                 provider: 'Tripadvisor',
                 rating: 4.6,
-                reviews: 289,
-                price: '€€',
-                cuisine: ['Italiana', 'Napoletana'],
-                occasion: ['Famiglia', 'Pranzo di lavoro'],
+                reviewCounts: [{ source: 'Tripadvisor', count: 289 }],
+                priceRange: '€€',
+                cuisines: ['Italiana', 'Napoletana'],
+                occasions: ['Famiglia', 'Pranzo di lavoro'],
+                mealTypes: ['Pranzo', 'Cena'],
+                dietaryOptions: [],
                 features: ['Accessibile', 'Tavoli all\'aperto'],
                 address: 'Via Agostino Depretis, 324/326, 80134 Napoli NA',
-                distance: '1.5 km',
+                driveDistance: 1.5,
                 driveTime: '6 min',
                 website: 'https://www.trattoriadannella.it/',
-                michelin: false,
-                gamberoRosso: false,
-                theFork: true,
-                tripadvisor: true,
+                michelin: undefined,
+                gamberoRosso: undefined,
+                theFork: { rating: 4.3, reviewCount: 70 },
+                tripadvisor: { rating: 4.2, reviewCount: 55 },
+                ratings: [],
+                reviews: [],
                 sources: []
               }
             ];
@@ -164,7 +182,7 @@ const SearchResults = () => {
             </div>
             <div className="flex items-center">
               <span className="mr-2">💰</span>
-              <span className="text-sm text-gray-600">{restaurant.price}</span>
+              <span className="text-sm text-gray-600">{restaurant.priceRange}</span>
             </div>
           </div>
         ))}
