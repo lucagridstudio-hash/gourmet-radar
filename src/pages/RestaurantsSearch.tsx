@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { restaurantSearchService } from '../services/restaurantSearchService';
 
 const RestaurantsSearch = () => {
   const [origin, setOrigin] = useState('');
@@ -9,12 +10,73 @@ const RestaurantsSearch = () => {
   const [priceRange, setPriceRange] = useState('');
   const [rating, setRating] = useState('');
   const [minReviews, setMinReviews] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real implementation, this would validate inputs and navigate to search results
-    navigate(`/search?section=restaurants&origin=${encodeURIComponent(origin)}&maxDriveMinutes=${encodeURIComponent(maxDriveMinutes)}&cuisines=${encodeURIComponent(JSON.stringify(cuisines))}&occasion=${encodeURIComponent(JSON.stringify(occasion))}&priceRange=${encodeURIComponent(priceRange)}&rating=${encodeURIComponent(rating)}&minReviews=${encodeURIComponent(minReviews)}`);
+
+    // Build natural language query from form inputs
+    const queryParts = [];
+
+    if (origin) {
+      queryParts.push(`near ${origin}`);
+    }
+
+    if (maxDriveMinutes) {
+      queryParts.push(`within ${maxDriveMinutes} minutes drive`);
+    }
+
+    if (cuisines.length > 0) {
+      queryParts.push(`with ${cuisines.join(' and ')} cuisine`);
+    }
+
+    if (occasion.length > 0) {
+      queryParts.push(`for ${occasion.join(' and ')} occasion`);
+    }
+
+    if (priceRange) {
+      queryParts.push(`in the ${priceRange} price range`);
+    }
+
+    if (rating) {
+      queryParts.push(`with rating above ${rating}`);
+    }
+
+    if (minReviews) {
+      queryParts.push(`with at least ${minReviews} reviews`);
+    }
+
+    const query = queryParts.length > 0
+      ? `Find restaurants ${queryParts.join(' ')}.`
+      : 'Find restaurants';
+
+    // Add restaurants context
+    const fullQuery = `In the RISTORANTI section (any type of restaurant): ${query}`;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Store search parameters for the results page
+      localStorage.setItem('gourmetRadarLastQuery', fullQuery);
+      localStorage.setItem('gourmetRadarLastSection', 'restaurants');
+
+      // Perform the search
+      const searchResult = await restaurantSearchService.searchRestaurants(fullQuery, 'restaurants');
+
+      // Store results in localStorage for the SearchResults page to pick up
+      localStorage.setItem('gourmetRadarSearchResults', JSON.stringify(searchResult.restaurants));
+
+      // Navigate to results page with original parameters for filtering/display
+      navigate(`/search?section=restaurants&origin=${encodeURIComponent(origin)}&maxDriveMinutes=${encodeURIComponent(maxDriveMinutes)}&cuisines=${encodeURIComponent(JSON.stringify(cuisines))}&occasion=${encodeURIComponent(JSON.stringify(occasion))}&priceRange=${encodeURIComponent(priceRange)}&rating=${encodeURIComponent(rating)}&minReviews=${encodeURIComponent(minReviews)}`);
+    } catch (err) {
+      setError('Errore durante la ricerca. Riprova più tardi.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,7 +87,7 @@ const RestaurantsSearch = () => {
           Trova il ristorante giusto per ogni occasione.
         </h1>
         <p className="text-gray-600 text-center max-w-xl">
-          Questa sezione trova ristoranti di qualsiasi fascia, da quelli economici 
+          Questa sezione trova ristoranti di qualsiasi fascia, da quelli economici
           ai locali di lusso, per ogni cucina, budget e occasione.
         </p>
       </div>
@@ -44,6 +106,7 @@ const RestaurantsSearch = () => {
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               className="w-full px-4 py-3 pl-10 pr-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              disabled={loading}
             />
           </div>
 
@@ -57,6 +120,7 @@ const RestaurantsSearch = () => {
                 value={maxDriveMinutes}
                 onChange={(e) => setMaxDriveMinutes(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
               >
                 <option value="">Seleziona tempo...</option>
                 <option value="10">10 minuti</option>
@@ -70,7 +134,7 @@ const RestaurantsSearch = () => {
                 <option value="custom">Personalizzato</option>
               </select>
             </div>
-            
+
             {/* Custom time input (shown when Personalizzato is selected) */}
             {maxDriveMinutes === 'custom' && (
               <div>
@@ -81,6 +145,7 @@ const RestaurantsSearch = () => {
                   type="number"
                   placeholder="Es. 75"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  disabled={loading}
                 />
               </div>
             )}
@@ -92,47 +157,52 @@ const RestaurantsSearch = () => {
               Cucina
             </label>
             <div className="flex flex-wrap gap-2">
-              <button 
+              <button
                 type="button"
-                onClick={() => setCuisines(prev => prev.includes('Italiana') 
-                  ? prev.filter(c => c !== 'Italiana') 
+                onClick={() => setCuisines(prev => prev.includes('Italiana')
+                  ? prev.filter(c => c !== 'Italiana')
                   : [...prev, 'Italiana'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${cuisines.includes('Italiana') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Italiana
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setCuisines(prev => prev.includes('Pizza') 
-                  ? prev.filter(c => c !== 'Pizza') 
+                onClick={() => setCuisines(prev => prev.includes('Pizza')
+                  ? prev.filter(c => c !== 'Pizza')
                   : [...prev, 'Pizza'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${cuisines.includes('Pizza') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Pizza
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setCuisines(prev => prev.includes('Sushi') 
-                  ? prev.filter(c => c !== 'Sushi') 
+                onClick={() => setCuisines(prev => prev.includes('Sushi')
+                  ? prev.filter(c => c !== 'Sushi')
                   : [...prev, 'Sushi'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${cuisines.includes('Sushi') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Sushi
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setCuisines(prev => prev.includes('Carne') 
-                  ? prev.filter(c => c !== 'Carne') 
+                onClick={() => setCuisines(prev => prev.includes('Carne')
+                  ? prev.filter(c => c !== 'Carne')
                   : [...prev, 'Carne'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${cuisines.includes('Carne') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Carne
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setCuisines(prev => prev.includes('Pesce') 
-                  ? prev.filter(c => c !== 'Pesce') 
+                onClick={() => setCuisines(prev => prev.includes('Pesce')
+                  ? prev.filter(c => c !== 'Pesce')
                   : [...prev, 'Pesce'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${cuisines.includes('Pesce') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Pesce
@@ -146,38 +216,42 @@ const RestaurantsSearch = () => {
               Occasione
             </label>
             <div className="flex flex-wrap gap-2">
-              <button 
+              <button
                 type="button"
-                onClick={() => setOccasion(prev => prev.includes('Romantico') 
-                  ? prev.filter(o => o !== 'Romantico') 
+                onClick={() => setOccasion(prev => prev.includes('Romantico')
+                  ? prev.filter(o => o !== 'Romantico')
                   : [...prev, 'Romantico'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${occasion.includes('Romantico') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Romantico
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setOccasion(prev => prev.includes('Famiglia') 
-                  ? prev.filter(o => o !== 'Famiglia') 
+                onClick={() => setOccasion(prev => prev.includes('Famiglia')
+                  ? prev.filter(o => o !== 'Famiglia')
                   : [...prev, 'Famiglia'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${occasion.includes('Famiglia') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Famiglia
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setOccasion(prev => prev.includes('Business') 
-                  ? prev.filter(o => o !== 'Business') 
+                onClick={() => setOccasion(prev => prev.includes('Business')
+                  ? prev.filter(o => o !== 'Business')
                   : [...prev, 'Business'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${occasion.includes('Business') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Business
               </button>
-              <button 
+              <button
                 type="button"
-                onClick={() => setOccasion(prev => prev.includes('Pranzo di lavoro') 
-                  ? prev.filter(o => o !== 'Pranzo di lavoro') 
+                onClick={() => setOccasion(prev => prev.includes('Pranzo di lavoro')
+                  ? prev.filter(o => o !== 'Pranzo di lavoro')
                   : [...prev, 'Pranzo di lavoro'])}
+                disabled={loading}
                 className={`px-3 py-2 text-sm rounded ${occasion.includes('Pranzo di lavoro') ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
                 Pranzo di lavoro
@@ -194,6 +268,7 @@ const RestaurantsSearch = () => {
               value={priceRange}
               onChange={(e) => setPriceRange(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={loading}
             >
               <option value="">Qualsiasi prezzo</option>
               <option value="€">€</option>
@@ -219,6 +294,7 @@ const RestaurantsSearch = () => {
               value={rating}
               onChange={(e) => setRating(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={loading}
             >
               <option value="">Qualsiasi valutazione</option>
               <option value="3.5">3.5+</option>
@@ -240,6 +316,7 @@ const RestaurantsSearch = () => {
               value={minReviews}
               onChange={(e) => setMinReviews(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={loading}
             >
               <option value="">Qualsiasi numero</option>
               <option value="10">Almeno 10</option>
@@ -248,19 +325,24 @@ const RestaurantsSearch = () => {
               <option value="100">Almeno 100</option>
               <option value="250">Almeno 250</option>
               <option value="500">Almeno 500</option>
-              <option value="1000">Almeno 1000</option>
             </select>
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <div className="pt-4">
-          <button 
-            type="submit" 
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 hover:shadow-md"
-          >
-            Cerca ristoranti
-          </button>
+          {/* Submit Button */}
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 hover:shadow-md"
+            >
+              {loading ? 'Cerco...' : 'Cerca ristoranti'}
+            </button>
+            {error && (
+              <div className="mt-3 text-center">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+          </div>
         </div>
       </form>
     </div>

@@ -18,65 +18,66 @@ function App() {
             <div className="flex justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <img className="h-8 w-auto" src="/logo.png" alt="Gourmet Radar" />
+                  {/* Using text instead of logo.png as per specifications */}
+                  <span className="text-xl font-bold text-indigo-600">GOURMET RADAR</span>
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
-                    <NavLink 
-                      to="/" 
-                      className={({ isActive }) => 
-                        isActive 
-                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" 
+                    <NavLink
+                      to="/"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
                           : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                       }
                     >
                       Home
                     </NavLink>
-                    <NavLink 
-                      to="/gourmet" 
-                      className={({ isActive }) => 
-                        isActive 
-                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" 
+                    <NavLink
+                      to="/gourmet"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
                           : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                       }
                     >
                       Gourmet
                     </NavLink>
-                    <NavLink 
-                      to="/restaurants" 
-                      className={({ isActive }) => 
-                        isActive 
-                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" 
+                    <NavLink
+                      to="/restaurants"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
                           : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                       }
                     >
                       Ristoranti
                     </NavLink>
-                    <NavLink 
-                      to="/search" 
-                      className={({ isActive }) => 
-                        isActive 
-                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" 
+                    <NavLink
+                      to="/search"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
                           : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                       }
                     >
                       Cerca
                     </NavLink>
-                    <NavLink 
-                      to="/favorites" 
-                      className={({ isActive }) => 
-                        isActive 
-                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" 
+                    <NavLink
+                      to="/favorites"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
                           : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                       }
                     >
                       Preferiti
                     </NavLink>
-                    <NavLink 
-                      to="/settings" 
-                      className={({ isActive }) => 
-                        isActive 
-                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" 
+                    <NavLink
+                      to="/settings"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
                           : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                       }
                     >
@@ -107,61 +108,61 @@ function App() {
         {/* Mobile menu (hidden by default) */}
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <NavLink 
-              to="/" 
-              className={({ isActive }) => 
-                isActive 
-                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600" 
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
                   : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               }
             >
               Home
             </NavLink>
-            <NavLink 
-              to="/gourmet" 
-              className={({ isActive }) => 
-                isActive 
-                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600" 
+            <NavLink
+              to="/gourmet"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
                   : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               }
             >
               Gourmet
             </NavLink>
-            <NavLink 
-              to="/restaurants" 
-              className={({ isActive }) => 
-                isActive 
-                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600" 
+            <NavLink
+              to="/restaurants"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
                   : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               }
             >
               Ristoranti
             </NavLink>
-            <NavLink 
-              to="/search" 
-              className={({ isActive }) => 
-                isActive 
-                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600" 
+            <NavLink
+              to="/search"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
                   : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               }
             >
               Cerca
             </NavLink>
-            <NavLink 
-              to="/favorites" 
-              className={({ isActive }) => 
-                isActive 
-                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600" 
+            <NavLink
+              to="/favorites"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
                   : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               }
             >
               Preferiti
             </NavLink>
-            <NavLink 
-              to="/settings" 
-              className={({ isActive }) => 
-                isActive 
-                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600" 
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
                   : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
               }
             >

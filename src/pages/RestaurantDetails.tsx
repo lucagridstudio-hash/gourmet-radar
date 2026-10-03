@@ -2,89 +2,411 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Restaurant } from '../types/restaurant';
 
+const RestaurantDetailsContent = ({ restaurant, navigate }: { restaurant: Restaurant; navigate: ReturnType<typeof useNavigate> }) => {
+  return (
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div className="flex flex-col items-center py-12">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          Dettagli Ristorante
+        </h1>
+        <p className="text-gray-600 text-center max-w-xl">
+          Informazioni dettagliate sul ristorante selezionato
+        </p>
+      </div>
+
+      {/* Restaurant Details */}
+      <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+        {/* Badges */}
+        <div className="flex items-center space-x-3 mb-4">
+          {restaurant.michelin && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 mr-2">
+              MICHELIN
+            </span>
+          )}
+          {restaurant.gamberoRosso && restaurant.gamberoRosso.forchette !== null && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-2">
+              {`${restaurant.gamberoRosso.forchette} FORCHETTE`}
+            </span>
+          )}
+        </div>
+
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{restaurant.name}</h1>
+        {restaurant.description && (
+          <p className="text-gray-600 mb-6">{restaurant.description}</p>
+        )}
+
+        {/* Sections */}
+        <div className="space-y-6">
+          {/* Address */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">📍</span>
+              Indirizzo
+            </h3>
+            <p className="text-gray-600">{restaurant.address}</p>
+            {restaurant.city && (
+              <p className="text-gray-600">{restaurant.city}, {restaurant.province || ''} {restaurant.region || ''}, {restaurant.country || ''}</p>
+            )}
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">📞</span>
+              Contatti
+            </h3>
+            {restaurant.phone && (
+              <p className="text-gray-600">
+                <span className="mr-2">📞</span>
+                {restaurant.phone}
+              </p>
+            )}
+            {restaurant.website && (
+              <p className="text-gray-600">
+                <span className="mr-2">🌐</span>
+                <a href={restaurant.website} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                  {restaurant.website}
+                </a>
+              </p>
+            )}
+            {restaurant.officialWebsite && (
+              <p className="text-gray-600">
+                <span className="mr-2">🏢</span>
+                <a href={restaurant.officialWebsite} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                  Sito ufficiale
+                </a>
+              </p>
+            )}
+          </div>
+
+          {/* Cuisines */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">🍽️</span>
+              Cucine
+            </h3>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {restaurant.cuisines.map(cuisine => (
+                <span key={cuisine} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                  {cuisine}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Occasions */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">🎯</span>
+              Occasioni
+            </h3>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {restaurant.occasions.map(occasion => (
+                <span key={occasion} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                  {occasion}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Meal Types */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">🕐</span>
+              Tipi di pasto
+            </h3>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {restaurant.mealTypes.map(meal => (
+                <span key={meal} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                  {meal}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Features */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">✨</span>
+              Caratteristiche
+            </h3>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {restaurant.features.map(feature => (
+                <span key={feature} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Dietary Options */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">🥗</span>
+              Opzioni dietetiche
+            </h3>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {restaurant.dietaryOptions.map(option => (
+                <span key={option} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                  {option}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Ratings */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">⭐</span>
+              Valutazioni
+            </h3>
+            <div className="space-y-3">
+              {/* Overall rating */}
+              {restaurant.rating !== null && (
+                <div className="flex items-center text-sm text-gray-500">
+                  <span className="text-indigo-600 font-medium mr-1">{restaurant.rating}</span>
+                  <span>/5</span>
+                  {restaurant.reviewCount !== null && (
+                    <span className="ml-2">({restaurant.reviewCount} recensioni)</span>
+                  )}
+                </div>
+              )}
+              {/* TheFork rating */}
+              {restaurant.theFork && restaurant.theFork.rating !== null && (
+                <div className="flex items-center text-sm text-gray-500">
+                  <span className="mr-2">🍴</span>
+                  <span>TheFork: </span>
+                  <span className="text-indigo-600 font-medium">{restaurant.theFork.rating}/10</span>
+                  {restaurant.theFork.reviewCount !== null && (
+                    <span className="ml-2">({restaurant.theFork.reviewCount} recensioni)</span>
+                  )}
+                </div>
+              )}
+              {/* TripAdvisor rating */}
+              {restaurant.tripadvisor && restaurant.tripadvisor.rating !== null && (
+                <div className="flex items-center text-sm text-gray-500">
+                  <span className="mr-2">🏨</span>
+                  <span>TripAdvisor: </span>
+                  <span className="text-indigo-600 font-medium">{restaurant.tripadvisor.rating}/5</span>
+                  {restaurant.tripadvisor.reviewCount !== null && (
+                    <span className="ml-2">({restaurant.tripadvisor.reviewCount} recensioni)</span>
+                  )}
+                </div>
+              )}
+              {/* Ratings array */}
+              {restaurant.ratings && restaurant.ratings.length > 0 && (
+                <>
+                  {restaurant.ratings.map((rat, idx) => (
+                    <div key={idx} className="flex items-center text-sm text-gray-500">
+                      <span className="mr-2">📊</span>
+                      <span>{rat.source}: </span>
+                      <span className="text-indigo-600 font-medium">{rat.value}/{rat.max}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+              {restaurant.rating === null && !restaurant.theFork?.rating && !restaurant.tripadvisor?.rating && (!restaurant.ratings || restaurant.ratings.length === 0) && (
+                <p className="text-gray-500">Nessuna valutazione disponibile</p>
+              )}
+            </div>
+          </div>
+
+          {/* Michelin Details */}
+          {restaurant.michelin && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <span className="mr-2">🏆</span>
+                Dettagli Michelin
+              </h3>
+              <div className="space-y-2">
+                {restaurant.michelin.stars !== null && (
+                  <p className="text-gray-600">
+                    <span className="mr-2">⭐</span>
+                    Stelle: {restaurant.michelin.stars}
+                  </p>
+                )}
+                {restaurant.michelin.bibGourmand !== null && (
+                  <p className="text-gray-600">
+                    <span className="mr-2">🍴</span>
+                    Bib Gourmand: {restaurant.michelin.bibGourmand ? 'Sì' : 'No'}
+                  </p>
+                )}
+                {restaurant.michelin.greenStar !== null && (
+                  <p className="text-gray-600">
+                    <span className="mr-2">🌱</span>
+                    Stella Verde: {restaurant.michelin.greenStar ? 'Sì' : 'No'}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Gambero Rosso Details */}
+          {restaurant.gamberoRosso && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <span className="mr-2">🏆</span>
+                Dettagli Gambero Rosso
+              </h3>
+              <div className="space-y-2">
+                {restaurant.gamberoRosso.forchette !== null && (
+                  <p className="text-gray-600">
+                    <span className="mr-2">🍴</span>
+                    Forchette: {restaurant.gamberoRosso.forchette}
+                  </p>
+                )}
+                {restaurant.gamberoRosso.otherAwards && restaurant.gamberoRosso.otherAwards.length > 0 && (
+                  <>
+                    <p className="text-gray-600 mb-1">
+                      <span className="mr-2">🏅</span>
+                      Altri premi:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {restaurant.gamberoRosso.otherAwards.map((award, idx) => (
+                        <span key={idx} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                          {award}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Sources */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="mr-2">🔗</span>
+              Fonti
+            </h3>
+            {restaurant.sources.length > 0 && (
+              <div className="space-y-3">
+                {restaurant.sources.map((source, idx) => (
+                  <div key={idx} className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <span className="text-indigo-600">
+                        {source.confidence === 'alto' ? '🟢' : source.confidence === 'medio' ? '🟡' : '🔴'}
+                      </span>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium text-gray-900">{source.provider}</p>
+                      <a
+                        href={source.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 hover:underline text-xs"
+                      >
+                        {source.sourceUrl}
+                      </a>
+                      <p className="text-xs text-gray-500">
+                        Recuperato il: {new Date(source.retrievedAt).toLocaleDateString('it-IT')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-xs text-gray-500 mt-2">
+              Recuperato il: {new Date(restaurant.retrievedAt).toLocaleDateString('it-IT')}
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-end mt-8">
+            <button
+              onClick={() => navigate('/favorites')}
+              className="mr-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded transition-colors"
+            >
+              Preferiti
+            </button>
+            <button
+              onClick={() => {
+                console.log('Add to compare for:', restaurant.name);
+              }}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded transition-colors"
+            >
+              Confronta
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded transition-colors"
+            >
+              Nuova ricerca
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const RestaurantDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchRestaurant = async () => {
-      setLoading(true);
-      setError(null);
-
+    const loadRestaurant = async () => {
       try {
-        // In a real implementation, this would fetch from API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Mock restaurant data
-        const mockRestaurant = {
-          id: id!,
-          name: 'Ristorante Da Michele',
-          provider: 'Michelin',
-          rating: 4.9,
-          reviewCounts: [{ source: 'Tripadvisor', count: 284 }],
-          priceRange: '€€€€',
-          cuisines: ['Italiana', 'Napoletana'],
-          occasions: ['Romantico', 'Cena speciale', 'Famiglia'],
-          mealTypes: ['Pranzo', 'Cena'],
-          features: ['Tavoli all\'aperto', 'Carta dei vini', 'Wi-Fi', 'Accessibile', 'Pet friendly'],
-          dietaryOptions: ['Vegetariano disponibile'],
-          address: 'Via Cesare Sersale, 1/3, 80139 Napoli NA',
-          phone: '+39 081 557 8417',
-          website: 'https://www.ristorantedamichele.it/',
-          driveDistance: 1.2,
-          driveTime: '5 min',
-          latitude: 40.8484,
-          longitude: 14.2526,
-          michelin: { stars: 3, bibGourmand: false, greenStar: false, selected: true },
-          gamberoRosso: { forchette: 3, otherAwards: [] },
-          theFork: { rating: 9.4, reviewCount: 229 },
-          tripadvisor: { rating: 4.7, reviewCount: 532 },
-          ratings: [],
-          reviews: [],
-          sources: [
-            {
-              provider: 'Michelin',
-              sourceUrl: 'https://guide.michelin.com/it',
-              retrievedAt: new Date().toISOString(),
-              confidence: 'alto'
-            } as const,
-            {
-              provider: 'TheFork',
-              sourceUrl: 'https://www.thefork.com/restaurant-da-michele',
-              retrievedAt: new Date().toISOString(),
-              confidence: 'alto'
-            } as const,
-            {
-              provider: 'Tripadvisor',
-              sourceUrl: 'https://www.tripadvisor.com/RestaurantReview-123456',
-              retrievedAt: new Date().toISOString(),
-              confidence: 'alto'
-            } as const
-          ]
-        };
-
-        setRestaurant(mockRestaurant);
+        const stored = localStorage.getItem('gourmetRadarSearchResults');
+        if (!stored) {
+          setError('Nessun risultato di ricerca disponibile. Effettua una nuova ricerca.');
+          setLoading(false);
+          return;
+        }
+        let data: Restaurant[] = [];
+        try {
+          data = JSON.parse(stored);
+        } catch {
+          setError('Errore nel leggere i risultati di ricerca.');
+          setLoading(false);
+          return;
+        }
+        if (!Array.isArray(data) || data.length === 0) {
+          setError('Nessun ristorante trovato nei risultati.');
+          setLoading(false);
+          return;
+        }
+        const found = data.find(r => r.id === id);
+        if (found) {
+          setRestaurant(found);
+          setLoading(false);
+        } else {
+          setNotFound(true);
+          setLoading(false);
+        }
       } catch (err) {
-        setError('Errore nel caricamento dei dettagli. Riprova più tardi.');
-        console.error(err);
-      } finally {
+        console.error('Error loading restaurant details:', err);
+        setError('Errore imprevisto durante il caricamento dei dettagli.');
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchRestaurant();
-    }
+    loadRestaurant();
   }, [id, navigate]);
 
-  if (loading && !restaurant) {
+  if (loading) {
     return (
-      <div className="flex h-[calc(100vh-64px)] items-center justify-center">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div className="space-y-8">
+        <div className="flex flex-col items-center py-12">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Dettagli Ristorante
+          </h1>
+          <p className="text-gray-600 text-center max-w-xl">
+            Informazioni dettagliate sul ristorante selezionato
+          </p>
+        </div>
+        <div className="text-center py-12">
+          <div className="flex items-center justify-center mb-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          </div>
+          <p className="text-gray-500">Caricamento...</p>
         </div>
       </div>
     );
@@ -92,86 +414,53 @@ const RestaurantDetails = () => {
 
   if (error) {
     return (
-      <div className="flex h-[calc(100vh-64px)] flex-col items-center justify-center p-6">
-        <div className="mb-6">
-          <div className="text-red-500 text-6xl mb-4">❌</div>
-          <p className="text-gray-600 text-center">{error}</p>
+      <div className="space-y-8">
+        <div className="flex flex-col items-center py-12">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Dettagli Ristorante
+          </h1>
+          <p className="text-gray-600 text-center max-w-xl">
+            Informazioni dettagliate sul ristorante selezionato
+          </p>
         </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-        >
-          Torna indietro
-        </button>
+        <div className="text-center py-12">
+          <div className="text-red-500 mb-4">
+            ❌
+          </div>
+          <p className="text-gray-600">{error}</p>
+          <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded transition-colors">
+            Torna alla Home
+          </button>
+        </div>
       </div>
     );
   }
 
-  if (!restaurant) {
+  if (notFound || !restaurant) {
     return (
-      <div className="flex h-[calc(100vh-64px)] flex-col items-center justify-center p-6">
-        <div className="mb-6">
-          <div className="text-gray-500 text-6xl mb-4">❓</div>
-          <p className="text-gray-600 text-center">Ristorante non trovato</p>
+      <div className="space-y-8">
+        <div className="flex flex-col items-center py-12">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Dettagli Ristorante
+          </h1>
+          <p className="text-gray-600 text-center max-w-xl">
+            Informazioni dettagliate sul ristorante selezionato
+          </p>
         </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-        >
-          Torna indietro
-        </button>
+        <div className="text-center py-12">
+          <div className="text-gray-500 mb-4">
+            🔍
+          </div>
+          <p className="text-gray-600">Ristorante non trovato. Potrebbe essere stato rimosso dai risultati di ricerca.</p>
+          <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded transition-colors">
+            Nuova ricerca
+          </button>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-[calc(100vh-64px)] p-6">
-      <header className="mb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-2 flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500"
-        >
-          <span className="mr-2">←</span>
-          Torna indietro
-        </button>
-        <h1 className="text-2xl font-bold text-gray-900">
-          {restaurant?.name}
-          {restaurant?.michelin && (
-            <span className="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-              MICHELIN
-            </span>
-          )}
-        </h1>
-      </header>
-
-      <div className="space-y-6">
-        <div className="text-center">
-          <p className="text-3xl font-bold text-indigo-600">{restaurant?.rating}</p>
-          <p className="text-sm text-gray-500"> /5 ({restaurant?.reviewCounts?.reduce((sum, rc) => sum + rc.count, 0) || 0} recensioni)</p>
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Informazioni</h2>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-500">Indirizzo:</p>
-            <p className="text-lg text-gray-900">{restaurant?.address}</p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-500">Telefono:</p>
-            <p className="text-lg text-gray-900">{restaurant?.phone}</p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-500">Sito web:</p>
-            <p className="text-lg text-gray-900">
-              <a href={restaurant?.website} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
-                Sito ufficiale
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <RestaurantDetailsContent restaurant={restaurant} navigate={navigate} />;
 };
 
 export default RestaurantDetails;
