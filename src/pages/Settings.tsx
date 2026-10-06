@@ -5,7 +5,10 @@ import { ApiKeyService } from '../utils/storage';
 
 const Settings = () => {
   const [geminiApiKey, setGeminiApiKey] = useState('');
-  const [geminiModel, setGeminiModel] = useState('gemini-3.8-flash');
+  const [geminiModel, setGeminiModel] = useState(() => {
+    const stored = localStorage.getItem('gourmetRadarGeminiModel');
+    return stored || 'gemini-3.8-flash';
+  });
   const [rememberKey, setRememberKey] = useState(false);
   const [status, setStatus] = useState<GeminiStatus>({
     gemini: 'idle',
@@ -124,15 +127,18 @@ const Settings = () => {
           </label>
           <select
             value={geminiModel}
-            onChange={(e) => setGeminiModel(e.target.value)}
+            onChange={(e) => {
+              const newModel = e.target.value;
+              setGeminiModel(newModel);
+              localStorage.setItem('gourmetRadarGeminiModel', newModel);
+              geminiService.setModel(newModel);
+            }}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="gemini-3.8-flash">gemini-3.8-flash (Default)</option>
-            <option value="gemini-3.5-pro">gemini-3.5-pro</option>
-            <option value="gemini-3.0-flash">gemini-3.0-flash</option>
           </select>
           <p className="mt-2 text-sm text-gray-500">
-            Il modello verrà usato per tutte le operazioni AI. Default: gemini-3.8-flash
+            Modello fisso: gemini-3.8-flash
           </p>
         </div>
 

@@ -2,7 +2,7 @@ import { ApiKeyService } from '../utils/storage';
 import type { NaturalLanguageQuery } from '../types/restaurant';
 import { GoogleGenAI, Type } from '@google/genai';
 
-const GEMINI_MODEL = 'gemini-3.8-flash';
+let GEMINI_MODEL = 'gemini-3.8-flash';
 
 const NATURAL_LANGUAGE_SCHEMA = {
   type: Type.OBJECT,
@@ -146,10 +146,18 @@ export class GeminiService {
 
   constructor() {
     this.loadApiKey();
+    this.loadModel();
   }
 
   private loadApiKey(): void {
     this.apiKey = ApiKeyService.getGeminiKey();
+  }
+
+  private loadModel(): void {
+    const storedModel = localStorage.getItem('gourmetRadarGeminiModel');
+    if (storedModel) {
+      GEMINI_MODEL = storedModel;
+    }
   }
 
   private init(): void {
@@ -162,6 +170,11 @@ export class GeminiService {
     this.apiKey = key;
     this.genAI = null;
     this.init();
+  }
+
+  setModel(model: string): void {
+    GEMINI_MODEL = model;
+    localStorage.setItem('gourmetRadarGeminiModel', model);
   }
 
   async testConnection(): Promise<boolean> {

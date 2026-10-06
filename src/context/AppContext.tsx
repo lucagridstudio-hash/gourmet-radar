@@ -1,20 +1,22 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { useState } from 'react';
 import type { Restaurant, SearchFilters } from '../types/restaurant';
 import { FavoritesService } from '../utils/storage';
-
-export interface AppContextType {
-  favorites: Restaurant[];
-  toggleFavorite: (restaurant: Restaurant) => void;
-  isFavorite: (restaurantId: string) => boolean;
-  searchFilters: SearchFilters | null;
-  setSearchFilters: React.Dispatch<React.SetStateAction<SearchFilters | null>>;
-}
-
-export const AppContext = createContext<AppContextType | undefined>(undefined);
+import { AppContext, type AppContextType } from './AppContext';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<Restaurant[]>(() => {
     return FavoritesService.getFavorites();
+  });
+  const [compareList, setCompareList] = useState<Restaurant[]>(() => {
+    const stored = localStorage.getItem('gourmetRadarCompare');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return [];
+      }
+    }
+    return [];
   });
   const [searchFilters, setSearchFilters] = useState<SearchFilters | null>(null);
 
@@ -33,10 +35,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return FavoritesService.isFavorite(restaurantId);
   };
 
+  const addToCompare = (restaurant: Restaurant) => {
+    setCompareList(prev => {
+      if (prev.some(r => r.id === restaurant.id)) {
+        return prev;
+      }
+      if (prev.length >= 3) {
+        return prev;
+      }
+      const updated = [...prev, restaurant];
+      localStorage.setItem('gourmetRadarCompare', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const removeFromCompare = (restaurantId: string) => {
+    setCompareList(prev => {
+      const updated = prev.filter(r => r.id !== restaurantId);
+      localStorage.setItem('gourmetRadarCompare', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const clearCompare = () => {
+    setCompareList([]);
+    localStorage.removeItem('gourmetRadarCompare');
+  };
+
   const value: AppContextType = {
     favorites,
     toggleFavorite,
     isFavorite,
+    compareList,
+    addToCompare,
+    removeFromCompare,
+    clearCompare,
     searchFilters,
     setSearchFilters,
   };
@@ -46,12 +79,4 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       {children}
     </AppContext.Provider>
   );
-};
-
-export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useAppContext must be used within an AppProvider');
-  }
-  return context;
 };

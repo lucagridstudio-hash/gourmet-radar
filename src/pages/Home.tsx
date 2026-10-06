@@ -47,7 +47,7 @@ const Home = () => {
         <div className="flex flex-col items-center py-12">
           <div className="flex items-center justify-between mb-6 w-full">
             <div className="flex-shrink-0">
-              <img src="/logo.png" alt="Gourmet Radar Logo" className="h-10 w-auto" />
+              <span className="text-xl font-bold text-indigo-600">GOURMET RADAR</span>
             </div>
             <div className="flex-1 flex-col items-start">
               <h3 className="text-xl font-semibold text-gray-900 ml-4 flex-grow">

@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Restaurant } from '../types/restaurant';
+import { useAppContext } from '../context/useAppContext';
 
 const RestaurantDetailsContent = ({ restaurant, navigate }: { restaurant: Restaurant; navigate: ReturnType<typeof useNavigate> }) => {
+  const { addToCompare, removeFromCompare, compareList } = useAppContext();
+  const isInCompare = compareList.some((r: Restaurant) => r.id === restaurant.id);
+
   return (
     <div className="space-y-8">
       {/* Page Header */}
@@ -315,20 +319,29 @@ const RestaurantDetailsContent = ({ restaurant, navigate }: { restaurant: Restau
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end mt-8">
+          <div className="flex items-center justify-end mt-8 space-x-4">
             <button
               onClick={() => navigate('/favorites')}
-              className="mr-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded transition-colors"
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded transition-colors"
             >
               Preferiti
             </button>
             <button
               onClick={() => {
-                console.log('Add to compare for:', restaurant.name);
+                if (isInCompare) {
+                  removeFromCompare(restaurant.id);
+                } else {
+                  addToCompare(restaurant);
+                }
               }}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded transition-colors"
+              className={`px-4 py-2 font-medium rounded transition-colors ${
+                isInCompare
+                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+              }`}
+              disabled={!isInCompare && compareList.length >= 3}
             >
-              Confronta
+              {isInCompare ? 'Rimuovi dal confronto' : 'Aggiungi al confronto'}
             </button>
             <button
               onClick={() => navigate('/')}

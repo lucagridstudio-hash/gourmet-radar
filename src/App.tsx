@@ -6,11 +6,12 @@ import SearchResults from './pages/SearchResults';
 import RestaurantDetails from './pages/RestaurantDetails';
 import Favorites from './pages/Favorites';
 import Settings from './pages/Settings';
+import Compare from './pages/Compare';
 import './App.css';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/gourmet-radar">
       <div className="min-h-screen bg-gray-50">
         {/* Navbar */}
         <nav className="bg-white shadow-md">
@@ -72,6 +73,16 @@ function App() {
                       }
                     >
                       Preferiti
+                    </NavLink>
+                    <NavLink
+                      to="/compare"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "border-b-2 border-indigo-600 text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
+                          : "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                      }
+                    >
+                      Confronta
                     </NavLink>
                     <NavLink
                       to="/settings"
@@ -159,6 +170,16 @@ function App() {
               Preferiti
             </NavLink>
             <NavLink
+              to="/compare"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-50 block rounded-md px-3 py-2 text-base font-medium text-indigo-600"
+                  : "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
+              }
+            >
+              Confronta
+            </NavLink>
+            <NavLink
               to="/settings"
               className={({ isActive }) =>
                 isActive
@@ -186,6 +207,7 @@ function App() {
             <Route path="/restaurant/:id" element={<RestaurantDetails />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/compare" element={<Compare />} />
             <Route path="*" element={<div className="text-center py-12"><h2 className="text-2xl font-bold text-gray-800">Page not found</h2><p className="mt-4 text-gray-600">The page you're looking for doesn't exist.</p></div>} />
           </Routes>
         </main>

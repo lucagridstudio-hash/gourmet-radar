@@ -2,10 +2,12 @@ import { useEffect, useState, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import type { Restaurant, SearchResult } from '../types/restaurant';
 import { restaurantSearchService } from '../services/restaurantSearchService';
+import { useAppContext } from '../context/useAppContext';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { toggleFavorite, isFavorite, addToCompare, compareList } = useAppContext();
   const [results, setResults] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +80,36 @@ const SearchResults = () => {
 
   useEffect(() => {
     const fetchResults = async () => {
+      // First check if we have saved results from a previous search
+      const stored = localStorage.getItem('gourmetRadarSearchResults');
+      const lastQuery = localStorage.getItem('gourmetRadarLastQuery');
+      const lastSection = localStorage.getItem('gourmetRadarLastSection');
+
+      if (stored && lastQuery && lastSection === section) {
+        try {
+          const savedResults = JSON.parse(stored);
+          if (Array.isArray(savedResults) && savedResults.length > 0) {
+            setResults(savedResults);
+            // We still need queryInfo for display, so we'll do a lightweight search for metadata
+            // or we can reconstruct basic queryInfo
+            setQueryInfo({
+              originalQuery: lastQuery,
+              parsedFilters: null,
+              groundingMetadata: {},
+              searchMetadata: {
+                queryUsed: lastQuery,
+                totalFound: savedResults.length,
+                searchTimestamp: new Date().toISOString(),
+              },
+            });
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          console.warn('Failed to parse saved search results:', e);
+        }
+      }
+
       if (!origin && cuisines.length === 0 && occasions.length === 0 && !priceRange && !rating && !minReviews) {
         setResults([]);
         setLoading(false);
@@ -106,16 +138,19 @@ const SearchResults = () => {
   }, [origin, maxDriveMinutes, cuisines, occasions, priceRange, rating, minReviews, section, query]);
 
   const handleFavorite = (restaurant: Restaurant) => {
-    // This would integrate with the context, for now just log
-    console.log('Toggle favorite for:', restaurant.name);
+    toggleFavorite(restaurant);
   };
 
   const handleCompare = (restaurant: Restaurant) => {
-    console.log('Add to compare for:', restaurant.name);
+    addToCompare(restaurant);
   };
 
   const handleDetails = (restaurant: Restaurant) => {
     navigate(`/restaurant/${restaurant.id}`);
+  };
+
+  const isInCompare = (restaurantId: string) => {
+    return compareList.some((r: Restaurant) => r.id === restaurantId);
   };
 
   if (loading && results.length === 0) {
@@ -250,15 +285,24 @@ const SearchResults = () => {
                 <div className="mt-2 flex space-x-2">
                   <button
                     onClick={() => handleFavorite(restaurant)}
-                    className="text-gray-500 hover:text-indigo-600 p-1"
-                    aria-label="Aggiungi ai preferiti"
+                    className={`p-1 transition-colors ${
+                      isFavorite(restaurant.id)
+                        ? 'text-red-500'
+                        : 'text-gray-500 hover:text-red-500'
+                    }`}
+                    aria-label={isFavorite(restaurant.id) ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}
                   >
-                    ❤️
+                    {isFavorite(restaurant.id) ? '❤️' : '🤍'}
                   </button>
                   <button
                     onClick={() => handleCompare(restaurant)}
-                    className="text-gray-500 hover:text-indigo-600 p-1"
-                    aria-label="Aggiungi al confronto"
+                    className={`p-1 transition-colors ${
+                      isInCompare(restaurant.id)
+                        ? 'text-indigo-600'
+                        : 'text-gray-500 hover:text-indigo-600'
+                    }`}
+                    aria-label={isInCompare(restaurant.id) ? 'Rimuovi dal confronto' : 'Aggiungi al confronto'}
+                    disabled={!isInCompare(restaurant.id) && compareList.length >= 3}
                   >
                     ⚖️
                   </button>
